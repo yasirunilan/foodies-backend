@@ -1,8 +1,8 @@
 import { ConfigService } from '@nestjs/config';
 import * as dynamoose from 'dynamoose';
 
-export const dynamodbProvider = {
-  provide: 'DYNAMODB',
+export const dynamoDBProvider = {
+  provide: 'DB_CONNECTION',
   useFactory: async (configService: ConfigService) => {
     const ddb = new dynamoose.aws.ddb.DynamoDB({
       credentials: {
@@ -10,9 +10,6 @@ export const dynamodbProvider = {
         secretAccessKey: configService.get<string>('aws.secretAccessKey'),
       },
       region: configService.get<string>('aws.region'),
-      ...(configService.get('aws.endpoint') && {
-        endpoint: configService.get<string>('aws.endpoint'),
-      }),
     });
 
     dynamoose.aws.ddb.set(ddb);

@@ -1,43 +1,38 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { UserModel } from './models/user.model';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { AuthRegisterDto } from 'src/auth/dto/auth-register';
+import { Model } from 'dynamoose/dist/Model';
+import { User } from './interfaces/user.interface';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private configService: ConfigService) {}
+  constructor(@Inject('USER_MODEL') private userModel: Model<User>) {}
 
-  async createUser(authRegisterDto: AuthRegisterDto) {
-    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-    const user = new UserModel(authRegisterDto);
-    console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
-    console.log(user)
-    return await user.save();
+  async findOne(email: string): Promise<User | undefined> {
+    return await this.userModel.get(email);
   }
 
-  // async findUserById(id: string) {
-  //   return await UserModel.get(id);
-  // }
+  async createUser(
+    authRegisterDto: AuthRegisterDto,
+  ): Promise<User | undefined> {
+    const existingUser = await this.findOne(authRegisterDto.email);
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists');
+    }
+    return await this.userModel.create(authRegisterDto);
+  }
 
-  // async findUserByEmail(email: string) {
-  //   const results = await UserModel.scan('email').eq(email).exec();
-  //   return results[0];
-  // }
+  async updateUser(email: string, updateData: Partial<User>): Promise<User> {
+    return await this.userModel.update({ email }, updateData);
+  }
 
-  private readonly users = [
-    {
-      userId: 1,
-      email: 'john@test1.com',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      email: 'maria@test1.com',
-      password: 'guess',
-    },
-  ];
+  sanitizeUser(user: User): UserResponseDto {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, refreshTokens, ...result } = user;
+    return result;
+  }
 
-  async findOne(email: string): Promise<any | undefined> {
-    return this.users.find((user) => user.email === email);
+  sanitizeUsers(users: User[]): UserResponseDto[] {
+    return users.map((user) => this.sanitizeUser(user));
   }
 }

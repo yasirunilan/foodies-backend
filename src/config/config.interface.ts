@@ -8,6 +8,13 @@ export interface AWSConfig {
   };
 }
 
+export interface JWTConfig {
+  secret: string;
+  expiresIn: string;
+  refreshTokenExpiresIn: string;
+}
+
 export interface Config {
   aws: AWSConfig;
+  jwt: JWTConfig;
 }
