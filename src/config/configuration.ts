@@ -8,6 +8,10 @@ export default (): Config => ({
     dynamodb: {
       tablePrefixes: process.env.TABLE_PREFIXES || 'foodies_dev_',
     },
+    s3: {
+      profilePictureBucket:
+        process.env.PROFILE_PIC_BUCKET || 'foodies-profile-pictures-dev',
+    },
   },
   jwt: {
     secret: process.env.JWT_SECRET,

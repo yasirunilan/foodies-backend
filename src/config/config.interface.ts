@@ -6,6 +6,9 @@ export interface AWSConfig {
   dynamodb: {
     tablePrefixes: string;
   };
+  s3: {
+    profilePictureBucket: string;
+  };
 }
 
 export interface JWTConfig {

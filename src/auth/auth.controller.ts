@@ -18,7 +18,7 @@ import { authLoginSchema } from './validation/auth-login.schema';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { authRefreshTokenSchema } from './validation/auth-refresh-token.schema';
 import { AuthRefreshTokenDto } from './dto/auth-refresh-token.dto';
-import { UserResponseDto } from 'src/user/dto/user-response.dto';
+import { UserResponseDto } from 'src/user/dto/userResponse.dto';
 
 @Controller('auth')
 export class AuthController {
