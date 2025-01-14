@@ -1,4 +1,4 @@
 export class FileUploadSignedUrlResponseDto {
-   url: string;
+  url: string;
   key: string;
 }
