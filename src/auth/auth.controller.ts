@@ -60,4 +60,10 @@ export class AuthController {
       authRefreshTokenDto.refreshToken,
     );
   }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Request() req: any) {
+    return await this.authService.logout(req.user.username);
+  }
 }

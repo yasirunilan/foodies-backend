@@ -14,7 +14,7 @@ export class AuthService {
   constructor(
     private usersService: UserService,
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -72,5 +72,15 @@ export class AuthService {
       access_token: newAccessToken,
       refresh_token: newRefreshToken,
     };
+  }
+
+  async logout(email: string) {
+    const user = await this.usersService.findOne(email);
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+    return await this.usersService.updateUser(user.email, {
+      refreshTokens: [],
+    });
   }
 }
