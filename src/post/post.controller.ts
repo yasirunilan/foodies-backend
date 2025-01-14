@@ -1,42 +1,31 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  UseGuards,
+  UsePipes,
+  Request,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import {
+  CreatePostRequestDto,
+  CreatePostResponseDto,
+} from './dto/createPost.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { JoiValidationPipe } from 'src/common/pipes/joi-validation.pipe';
+import { createPostRequestSchema } from './validation/createPostRequest.schema';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.postService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(+id, updatePostDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(+id);
+  @Post('/add')
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new JoiValidationPipe(createPostRequestSchema))
+  async getProfilePictureUploadUrl(
+    @Body() payload: CreatePostRequestDto,
+    @Request() req: any,
+  ): Promise<CreatePostResponseDto> {
+    return await this.postService.createPost(req.user.username, payload);
   }
 }
